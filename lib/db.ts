@@ -1,15 +1,21 @@
 import Dexie, { type Table } from 'dexie';
-import type { DiaryEntry, DiaryEntryInput, UserSettings } from './types';
+import type { DiaryEntry, DiaryEntryInput, UserSettings, ChatMessage } from './types';
 
 class GratitudeDB extends Dexie {
   entries!: Table<DiaryEntry, string>;
   settings!: Table<UserSettings, string>;
+  chatMessages!: Table<ChatMessage, string>;
 
   constructor() {
     super('GratitudeDiary');
     this.version(1).stores({
       entries: 'id, date, category, mood, createdAt',
       settings: 'id',
+    });
+    this.version(2).stores({
+      entries: 'id, date, category, mood, createdAt',
+      settings: 'id',
+      chatMessages: 'id, date, role, createdAt',
     });
   }
 }
@@ -136,4 +142,28 @@ export async function exportAllData(): Promise<string> {
   const settings = await getSettings();
   const data = { entries, settings, exportedAt: new Date().toISOString() };
   return JSON.stringify(data, null, 2);
+}
+
+// Chat messages
+export async function saveChatMessage(msg: Omit<ChatMessage, 'id' | 'createdAt'>): Promise<ChatMessage> {
+  const message: ChatMessage = {
+    id: generateId(),
+    ...msg,
+    createdAt: Date.now(),
+  };
+  await db.chatMessages.add(message);
+  return message;
+}
+
+export async function getChatMessagesByDate(date: string): Promise<ChatMessage[]> {
+  return db.chatMessages
+    .where('date')
+    .equals(date)
+    .sortBy('createdAt');
+}
+
+export async function getChatDates(): Promise<string[]> {
+  const messages = await db.chatMessages.orderBy('date').reverse().toArray();
+  const dates = new Set(messages.map((m) => m.date));
+  return Array.from(dates).sort().reverse();
 }

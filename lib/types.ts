@@ -70,6 +70,14 @@ export interface UserSettings {
 
 export type WriteMode = 'text' | 'voice' | 'chat' | null;
 
+export interface ChatMessage {
+  id: string;
+  date: string;
+  role: 'user' | 'assistant';
+  content: string;
+  createdAt: number;
+}
+
 export interface DiaryEntryInput {
   date: string;
   content: string;
