@@ -5,11 +5,18 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { getEntriesByMonth } from '@/lib/db';
 import type { DiaryEntry } from '@/lib/types';
 
+const STREAK_ICONS = ['🌱', '🌸', '🌻', '🌟'];
+
+function getStreakIcon(streak: number): string {
+  if (streak >= 30) return STREAK_ICONS[3];
+  if (streak >= 7) return STREAK_ICONS[2];
+  if (streak >= 3) return STREAK_ICONS[1];
+  return STREAK_ICONS[0];
+}
+
 interface CalendarHeatmapProps {
   onSelectDate?: (date: string) => void;
 }
-
-const WEEKDAYS = ['日', '一', '二', '三', '四', '五', '六'];
 
 export default function CalendarHeatmap({ onSelectDate }: CalendarHeatmapProps) {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -22,7 +29,7 @@ export default function CalendarHeatmap({ onSelectDate }: CalendarHeatmapProps) 
     getEntriesByMonth(year, month + 1).then((entries) => {
       const map = new Map<string, DiaryEntry>();
       for (const entry of entries) {
-        if (!map.has(entry.date)) {
+        if (!map.has(entry.date) || entry.createdAt > (map.get(entry.date)?.createdAt || 0)) {
           map.set(entry.date, entry);
         }
       }
@@ -34,76 +41,75 @@ export default function CalendarHeatmap({ onSelectDate }: CalendarHeatmapProps) 
   const firstDayOfWeek = new Date(year, month, 1).getDay();
   const today = new Date().toISOString().slice(0, 10);
 
-  // Build calendar grid
-  const cells: (number | null)[] = [];
-  for (let i = 0; i < firstDayOfWeek; i++) cells.push(null);
-  for (let day = 1; day <= daysInMonth; day++) cells.push(day);
+  const weeks: (number | null)[][] = [];
+  let currentWeek: (number | null)[] = [];
+
+  for (let i = 0; i < firstDayOfWeek; i++) {
+    currentWeek.push(null);
+  }
+
+  for (let day = 1; day <= daysInMonth; day++) {
+    currentWeek.push(day);
+    if (currentWeek.length === 7) {
+      weeks.push(currentWeek);
+      currentWeek = [];
+    }
+  }
+
+  if (currentWeek.length > 0) {
+    while (currentWeek.length < 7) currentWeek.push(null);
+    weeks.push(currentWeek);
+  }
+
+  const weekDayLabels = ['日', '一', '二', '三', '四', '五', '六'];
 
   const prevMonth = () => setCurrentDate(new Date(year, month - 1, 1));
   const nextMonth = () => setCurrentDate(new Date(year, month + 1, 1));
 
   return (
-    <div>
-      {/* Month header */}
-      <div className="flex items-center justify-between mb-6">
-        <button
-          onClick={prevMonth}
-          className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-black/5 text-muted-foreground"
-        >
-          <ChevronLeft size={18} />
+    <div className="glass-card p-5">
+      <div className="flex items-center justify-between mb-4">
+        <button onClick={prevMonth} className="text-muted-foreground hover:text-warm-500">
+          <ChevronLeft size={20} />
         </button>
-        <span className="text-base font-semibold text-foreground">
-          {year}年 {month + 1}月
+        <span className="font-display text-lg font-semibold text-warm-500">
+          {year}年{month + 1}月
         </span>
-        <button
-          onClick={nextMonth}
-          className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-black/5 text-muted-foreground"
-        >
-          <ChevronRight size={18} />
+        <button onClick={nextMonth} className="text-muted-foreground hover:text-warm-500">
+          <ChevronRight size={20} />
         </button>
       </div>
 
-      {/* Weekday headers */}
-      <div className="grid grid-cols-7 mb-2">
-        {WEEKDAYS.map((d) => (
-          <div key={d} className="text-center text-[11px] font-medium text-muted-foreground py-1">
-            {d}
+      <div className="grid grid-cols-7 gap-1.5">
+        {weekDayLabels.map((label) => (
+          <div key={label} className="text-center text-xs text-muted-foreground py-3">
+            {label}
           </div>
         ))}
-      </div>
-
-      {/* Day grid */}
-      <div className="grid grid-cols-7 gap-y-2">
-        {cells.map((day, i) => {
+        {weeks.flat().map((day, i) => {
           if (day === null) return <div key={`empty-${i}`} />;
-
           const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-          const hasEntry = entriesByDate.has(dateStr);
+          const entry = entriesByDate.get(dateStr);
           const isToday = dateStr === today;
 
           return (
             <button
               key={dateStr}
-              onClick={() => hasEntry && onSelectDate?.(dateStr)}
-              disabled={!hasEntry}
-              className="flex flex-col items-center py-1.5"
+              onClick={() => entry && onSelectDate?.(dateStr)}
+              className={`rounded-xl flex flex-col items-center justify-center gap-0.5 py-2 text-sm relative ${
+                entry
+                  ? 'bg-warm-300/50 hover:bg-warm-300 font-medium text-warm-700'
+                  : 'hover:bg-white/50 text-muted-foreground'
+              } ${isToday ? 'ring-2 ring-warm-400' : ''}`}
             >
-              <span
-                className={`
-                  w-9 h-9 flex items-center justify-center rounded-full text-sm
-                  ${isToday
-                    ? 'bg-warm-500 text-white font-semibold'
-                    : hasEntry
-                      ? 'hover:bg-warm-100 font-medium text-foreground'
-                      : 'text-muted-foreground'
-                  }
-                `}
-              >
-                {day}
+              <span className="text-base">{day}</span>
+              <span className="h-3 flex items-center">
+                {entry && (
+                  <span className="text-[11px] leading-none">
+                    {getStreakIcon(1)}
+                  </span>
+                )}
               </span>
-              {hasEntry && (
-                <span className="w-1 h-1 rounded-full bg-warm-400 mt-0.5" />
-              )}
             </button>
           );
         })}

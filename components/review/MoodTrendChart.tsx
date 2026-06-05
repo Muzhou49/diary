@@ -49,7 +49,7 @@ export default function MoodTrendChart() {
 
   return (
     <div className="space-y-4">
-      <div className="bg-white rounded-2xl border border-black/5 p-5">
+      <div className="glass-card p-5">
         <h3 className="font-display text-base font-semibold text-warm-500 mb-3">情绪分布</h3>
         {moodData.length === 0 ? (
           <p className="text-muted-foreground text-sm text-center py-8">还没有数据，去写一篇日记吧 ✨</p>
@@ -88,7 +88,7 @@ export default function MoodTrendChart() {
         )}
       </div>
 
-      <div className="bg-white rounded-2xl border border-black/5 p-5">
+      <div className="glass-card p-5">
         <h3 className="font-display text-base font-semibold text-warm-500 mb-3">感恩分类排行</h3>
         {categoryData.length === 0 ? (
           <p className="text-muted-foreground text-sm text-center py-6">记录多了就会出现了～</p>
