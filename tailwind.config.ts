@@ -61,8 +61,8 @@ const config: Config = {
         sm: "calc(var(--radius) - 4px)",
       },
       fontFamily: {
-        display: ["var(--font-display)", "serif"],
-        body: ["var(--font-body)", "sans-serif"],
+        display: ["Georgia", '"Noto Serif SC"', '"Songti SC"', 'serif'],
+        body: ['"PingFang SC"', '"Hiragino Sans GB"', '"Microsoft YaHei"', '"Helvetica Neue"', 'Arial', 'sans-serif'],
       },
       animation: {
         "float-up": "floatUp 1s ease-out forwards",

@@ -1,18 +1,5 @@
 import type { Metadata } from 'next';
-import { Inter, Noto_Serif_SC } from 'next/font/google';
 import './globals.css';
-import { cn } from '@/lib/utils';
-
-const inter = Inter({
-  subsets: ['latin'],
-  variable: '--font-body',
-});
-
-const notoSerif = Noto_Serif_SC({
-  subsets: ['latin'],
-  weight: ['400', '600', '700'],
-  variable: '--font-display',
-});
 
 export const metadata: Metadata = {
   title: '感恩日记',
@@ -23,7 +10,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="zh-CN">
-      <body className={cn(inter.variable, notoSerif.variable, 'font-body')}>
+      <body className="font-body">
         {children}
       </body>
     </html>

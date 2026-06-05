@@ -117,7 +117,7 @@ export default function WritePage() {
         />
       )}
       {showChat && !apiKey && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20">
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/20">
           <div className="glass-card p-6 max-w-sm text-center space-y-4 m-4">
             <p className="text-muted-foreground">
               请先在<span className="text-warm-500">设置</span>中配置 DeepSeek API Key 🔑

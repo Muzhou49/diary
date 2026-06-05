@@ -64,7 +64,7 @@ export default function AIChatDialog({ apiKey, onDiaryGenerated, onClose }: AICh
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 30 }}
-      className="fixed inset-0 z-50 flex flex-col bg-cream"
+      className="fixed inset-0 z-[60] flex flex-col bg-cream"
     >
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-warm-200/50">
