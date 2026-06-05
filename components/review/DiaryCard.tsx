@@ -16,7 +16,7 @@ export default function DiaryCard({ entry }: DiaryCardProps) {
     : entry.content;
 
   return (
-    <Link href={`/diary/${entry.id}`}>
+    <Link href={`/diary?id=${entry.id}`}>
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}

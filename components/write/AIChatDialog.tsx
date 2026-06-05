@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Send, Bot, User, Loader2, ChevronLeft, ChevronRight, Sparkles } from 'lucide-react';
 import { saveChatMessage, getChatMessagesByDate, getChatDates } from '@/lib/db';
+import { chatWithDeepSeek, CHAT_SYSTEM_PROMPT } from '@/lib/deepseek';
 import type { ChatMessage } from '@/lib/types';
 
 const WELCOME_MSG: ChatMessage = {
@@ -94,30 +95,29 @@ export default function AIChatDialog({ apiKey, onDiaryGenerated, onClose }: AICh
     try {
       const historyForApi = [...messages, userMsg]
         .filter((m) => m.id !== 'welcome')
-        .map((m) => ({ role: m.role, content: m.content }));
+        .map((m) => ({ role: m.role as 'user' | 'assistant', content: m.content }));
 
-      const res = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: historyForApi, apiKey }),
-      });
+      const reply = await chatWithDeepSeek([
+        { role: 'system', content: CHAT_SYSTEM_PROMPT },
+        ...historyForApi,
+      ], apiKey);
 
-      if (!res.ok) throw new Error('API error');
-      const data = await res.json();
+      const isSummary = reply.includes('[SUMMARY]');
+      const content = isSummary ? reply.replace('[SUMMARY]', '').trim() : reply;
 
-      if (data.isSummary) {
-        onDiaryGenerated(data.content);
+      if (isSummary) {
+        onDiaryGenerated(content);
       } else {
         const assistantMsg: ChatMessage = {
           id: `assistant-${Date.now()}`,
           date: today,
           role: 'assistant',
-          content: data.content,
+          content,
           createdAt: Date.now(),
         };
         setMessages((prev) => [...prev, assistantMsg]);
         // Save assistant message to DB
-        await saveChatMessage({ date: today, role: 'assistant', content: data.content });
+        await saveChatMessage({ date: today, role: 'assistant', content });
         // Refresh available dates
         getChatDates().then((dates) => {
           const merged = dates.includes(today) ? dates : [today, ...dates];

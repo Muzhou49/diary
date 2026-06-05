@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Wand2, Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { chatWithDeepSeek, POLISH_SYSTEM_PROMPT } from '@/lib/deepseek';
 
 interface PolishButtonProps {
   content: string;
@@ -17,14 +18,12 @@ export default function PolishButton({ content, apiKey, onPolished }: PolishButt
     if (!content.trim() || !apiKey) return;
     setLoading(true);
     try {
-      const res = await fetch('/api/polish', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ content: content.trim(), apiKey }),
-      });
-      const data = await res.json();
-      if (data.polished) {
-        onPolished(data.polished);
+      const polished = await chatWithDeepSeek([
+        { role: 'system', content: POLISH_SYSTEM_PROMPT },
+        { role: 'user', content: `请帮我润色这段感恩日记：${content.trim()}` },
+      ], apiKey);
+      if (polished) {
+        onPolished(polished);
       }
     } catch {
       // silently fail - user can try again

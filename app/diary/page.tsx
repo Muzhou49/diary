@@ -1,34 +1,44 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useState, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { ArrowLeft, Trash2 } from 'lucide-react';
 import AppShell from '@/components/layout/AppShell';
 import { getEntry, deleteEntry } from '@/lib/db';
 import { MOOD_EMOJIS, CATEGORY_LABELS, MOOD_LABELS } from '@/lib/types';
 import type { DiaryEntry } from '@/lib/types';
 
-export default function DiaryDetailPage() {
-  const params = useParams();
+function DiaryContent() {
+  const searchParams = useSearchParams();
   const router = useRouter();
   const [entry, setEntry] = useState<DiaryEntry | null>(null);
 
-  const id = params.id as string;
+  const id = searchParams.get('id');
 
   useEffect(() => {
-    getEntry(id).then((result) => setEntry(result ?? null));
+    if (id) {
+      getEntry(id).then((result) => setEntry(result ?? null));
+    }
   }, [id]);
 
   const handleDelete = async () => {
-    if (!confirm('确定要删除这篇日记吗？')) return;
+    if (!id || !confirm('确定要删除这篇日记吗？')) return;
     await deleteEntry(id);
     router.push('/review');
   };
 
-  if (!entry) {
+  if (!id || !entry) {
     return (
       <AppShell>
-        <p className="text-center text-muted-foreground py-12">日记不存在</p>
+        <div className="text-center space-y-4 py-12">
+          <p className="text-muted-foreground">日记不存在</p>
+          <button
+            onClick={() => router.push('/review')}
+            className="text-sm text-warm-500 underline"
+          >
+            返回回顾
+          </button>
+        </div>
       </AppShell>
     );
   }
@@ -75,5 +85,17 @@ export default function DiaryDetailPage() {
         )}
       </div>
     </AppShell>
+  );
+}
+
+export default function DiaryPage() {
+  return (
+    <Suspense fallback={
+      <AppShell>
+        <p className="text-center text-muted-foreground py-12">加载中…</p>
+      </AppShell>
+    }>
+      <DiaryContent />
+    </Suspense>
   );
 }
