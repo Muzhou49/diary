@@ -80,9 +80,9 @@ export default function CalendarHeatmap({ onSelectDate }: CalendarHeatmapProps) 
         </button>
       </div>
 
-      <div className="grid grid-cols-7 gap-1">
+      <div className="grid grid-cols-7 gap-1.5">
         {weekDayLabels.map((label) => (
-          <div key={label} className="text-center text-xs text-muted-foreground py-1">
+          <div key={label} className="text-center text-xs text-muted-foreground py-3">
             {label}
           </div>
         ))}
@@ -96,18 +96,20 @@ export default function CalendarHeatmap({ onSelectDate }: CalendarHeatmapProps) 
             <button
               key={dateStr}
               onClick={() => entry && onSelectDate?.(dateStr)}
-              className={`aspect-square rounded-lg flex items-center justify-center text-sm relative ${
+              className={`rounded-xl flex flex-col items-center justify-center gap-0.5 py-2 text-sm relative ${
                 entry
                   ? 'bg-warm-300/50 hover:bg-warm-300 font-medium text-warm-700'
                   : 'hover:bg-white/50 text-muted-foreground'
               } ${isToday ? 'ring-2 ring-warm-400' : ''}`}
             >
-              <span>{day}</span>
-              {entry && (
-                <span className="absolute -bottom-0.5 text-[10px]">
-                  {getStreakIcon(1)}
-                </span>
-              )}
+              <span className="text-base">{day}</span>
+              <span className="h-3 flex items-center">
+                {entry && (
+                  <span className="text-[11px] leading-none">
+                    {getStreakIcon(1)}
+                  </span>
+                )}
+              </span>
             </button>
           );
         })}
