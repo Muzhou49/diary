@@ -19,22 +19,20 @@ export default function ReviewPage() {
 
   return (
     <AppShell>
-      <div className="space-y-4">
-        <h1 className="font-display text-2xl font-bold text-warm-500 text-center">
-          你的感恩之路 🌷
-        </h1>
-
+      <div className="space-y-5">
         <StreakBadge />
 
         <Tabs defaultValue="calendar">
-          <TabsList className="w-full bg-white/50">
-            <TabsTrigger value="calendar" className="flex-1">日历</TabsTrigger>
-            <TabsTrigger value="trends" className="flex-1">趋势</TabsTrigger>
-            <TabsTrigger value="list" className="flex-1">列表</TabsTrigger>
+          <TabsList className="w-full bg-white rounded-xl border border-black/5 p-1">
+            <TabsTrigger value="calendar" className="flex-1 rounded-lg data-[state=active]:bg-warm-100 data-[state=active]:text-warm-600 text-sm">日历</TabsTrigger>
+            <TabsTrigger value="trends" className="flex-1 rounded-lg data-[state=active]:bg-warm-100 data-[state=active]:text-warm-600 text-sm">趋势</TabsTrigger>
+            <TabsTrigger value="list" className="flex-1 rounded-lg data-[state=active]:bg-warm-100 data-[state=active]:text-warm-600 text-sm">列表</TabsTrigger>
           </TabsList>
 
           <TabsContent value="calendar" className="mt-4">
-            <CalendarHeatmap />
+            <div className="bg-white rounded-2xl border border-black/5 p-5">
+              <CalendarHeatmap />
+            </div>
           </TabsContent>
 
           <TabsContent value="trends" className="mt-4">
@@ -43,9 +41,10 @@ export default function ReviewPage() {
 
           <TabsContent value="list" className="mt-4">
             {entries.length === 0 ? (
-              <p className="text-center text-muted-foreground py-12">
-                还没有日记，去写一篇吧 ✍️
-              </p>
+              <div className="bg-white rounded-2xl border border-black/5 p-10 text-center">
+                <p className="text-4xl mb-3">✍️</p>
+                <p className="text-muted-foreground text-sm">还没有日记，去写一篇吧</p>
+              </div>
             ) : (
               <div className="space-y-3">
                 {entries.map((entry) => (

@@ -20,7 +20,7 @@ export default function DiaryCard({ entry }: DiaryCardProps) {
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="glass-card p-4 flex items-center gap-4 hover:shadow-md transition-shadow"
+        className="bg-white rounded-2xl border border-black/5 p-4 flex items-center gap-4 hover:shadow-sm transition-shadow"
       >
         <div className="text-3xl flex-shrink-0">
           {MOOD_EMOJIS[entry.mood]}
