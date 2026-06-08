@@ -2,12 +2,13 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { PencilLine, CalendarHeart, Settings } from 'lucide-react';
+import { PencilLine, CalendarHeart, BarChart3, Settings } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const tabs = [
   { href: '/write', label: '写日记', icon: PencilLine },
   { href: '/review', label: '回顾', icon: CalendarHeart },
+  { href: '/analysis', label: '分析', icon: BarChart3 },
   { href: '/settings', label: '设置', icon: Settings },
 ];
 
@@ -38,7 +39,7 @@ export default function BottomNav() {
                 className={active ? 'text-warm-500' : 'text-muted-foreground'}
               />
               <span
-                className={`text-xs ${active ? 'font-semibold text-warm-500' : 'text-muted-foreground'}`}
+                className={`text-[10px] ${active ? 'font-semibold text-warm-500' : 'text-muted-foreground'}`}
               >
                 {label}
               </span>
