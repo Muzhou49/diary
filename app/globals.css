@@ -15,7 +15,7 @@
     --secondary: 340 30% 88%;
     --secondary-foreground: 340 15% 25%;
     --muted: 30 20% 96%;
-    --muted-foreground: 30 5% 45%;
+    --muted-foreground: 25 8% 35%;
     --accent: 25 80% 75%;
     --accent-foreground: 25 30% 20%;
     --destructive: 0 84% 60%;
@@ -24,21 +24,57 @@
     --input: 30 20% 90%;
     --ring: 20 60% 65%;
     --radius: 1rem;
+
+    /* Z-index scale: 10 base, 20 dropdown, 30 sticky, 50 overlay */
+    --z-base: 10;
+    --z-dropdown: 20;
+    --z-sticky: 30;
+    --z-overlay: 50;
   }
 
   * {
     @apply border-border;
   }
 
+  /* Focus styles for keyboard accessibility */
+  :focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px hsl(20 60% 65%), 0 0 0 4px white;
+    border-radius: 8px;
+  }
+
   body {
-    @apply bg-cream text-foreground antialiased;
+    @apply text-foreground antialiased;
     font-family: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Arial, sans-serif;
+    background: linear-gradient(135deg, #FFFBF5 0%, #FDF0E8 30%, #FDE9DD 60%, #F5EFE8 100%);
+  }
+
+  /* Nature Distilled: grain texture overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background-image: url('/grain.svg');
+    background-repeat: repeat;
+    opacity: 0.6;
   }
 }
 
+/* Nature Distilled: organic decorative leaf */
+.nature-leaf {
+  position: fixed;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.04;
+}
+.nature-leaf-tl { top: -40px; left: -30px; transform: rotate(15deg); }
+.nature-leaf-br { bottom: 80px; right: -50px; transform: rotate(-160deg); }
+
 @layer components {
   .glass-card {
-    @apply bg-white/70 backdrop-blur-lg border border-white/40 shadow-sm rounded-3xl;
+    @apply bg-white/80 backdrop-blur-lg border border-white/40 shadow-sm rounded-3xl;
   }
 
   .warm-gradient {
@@ -49,5 +85,16 @@
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+}
+
+/* Respect user's motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }

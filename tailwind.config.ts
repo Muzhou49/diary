@@ -11,6 +11,20 @@ const config: Config = {
         apricot: "#FAC898",
         rose: "#F2C4C4",
         lavender: "#E8D5E0",
+        sage: {
+          50: "#F6F9F6",
+          100: "#E8F0E9",
+          200: "#C5DAC8",
+          300: "#A3C5A7",
+          400: "#81AF86",
+          500: "#6A9A6F",
+        },
+        clover: {
+          50: "#F2F8F2",
+          100: "#DCEEDD",
+          400: "#5B9A5F",
+          500: "#3D7A41",
+        },
         warm: {
           50: "#FFFBF5",
           100: "#FFF7ED",

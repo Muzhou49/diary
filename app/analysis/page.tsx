@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
-import { RefreshCw, Loader2, Sparkles } from 'lucide-react';
+import { RefreshCw, Sparkles } from 'lucide-react';
 import AppShell from '@/components/layout/AppShell';
 import { getAllEntries, getMoodStats, getCategoryStats, getSettings, saveSettings } from '@/lib/db';
 import { MOOD_EMOJIS, MOOD_LABELS, CATEGORY_LABELS } from '@/lib/types';
@@ -53,9 +53,14 @@ interface StatCardProps {
 
 function StatCard({ value, label }: StatCardProps) {
   return (
-    <div className="bg-white/70 rounded-2xl p-4 text-center">
-      <div className="text-2xl font-bold text-warm-500">{value}</div>
-      <div className="text-xs text-muted-foreground mt-1">{label}</div>
+    <div className="relative group">
+      {/* Glow halo */}
+      <div className="absolute inset-0 rounded-2xl bg-gradient-to-b from-warm-300/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-sm" />
+      {/* Card */}
+      <div className="relative bg-white/80 rounded-2xl p-3.5 text-center ring-1 ring-warm-200/30">
+        <div className="text-xl font-bold text-warm-500">{value}</div>
+        <div className="text-[10px] text-muted-foreground mt-0.5">{label}</div>
+      </div>
     </div>
   );
 }
@@ -296,9 +301,12 @@ export default function AnalysisPage() {
               写完日记后可以生成月度总结哦～
             </p>
           ) : summaryLoading ? (
-            <div className="flex items-center gap-2 text-muted-foreground text-sm py-4">
-              <Loader2 size={14} className="animate-spin" />
-              正在生成本月总结…
+            <div className="space-y-3 py-2 animate-pulse">
+              <div className="h-3 bg-warm-200/60 rounded-full w-full" />
+              <div className="h-3 bg-warm-200/60 rounded-full w-5/6" />
+              <div className="h-3 bg-warm-200/60 rounded-full w-4/6" />
+              <div className="h-3 bg-warm-200/60 rounded-full w-3/6" />
+              <p className="text-xs text-muted-foreground pt-1">正在生成本月总结…</p>
             </div>
           ) : aiSummary ? (
             <p className="text-sm leading-relaxed text-foreground/80">{aiSummary}</p>

@@ -16,15 +16,15 @@ export default function BottomNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-xl border-t border-warm-200/50 safe-area-bottom">
-      <div className="max-w-lg mx-auto flex justify-around items-center h-16 px-4">
+    <nav className="fixed bottom-0 left-0 right-0 z-[var(--z-overlay)] bg-white/85 backdrop-blur-xl border-t border-warm-200/50 safe-area-bottom">
+      <div className="max-w-lg mx-auto flex justify-around items-center h-16 px-2">
         {tabs.map(({ href, label, icon: Icon }) => {
           const active = pathname.startsWith(href);
           return (
             <Link
               key={href}
               href={href}
-              className="relative flex flex-col items-center gap-1 py-1"
+              className="relative flex flex-col items-center justify-center gap-0.5 min-h-[44px] min-w-[44px] flex-1 py-1"
             >
               {active && (
                 <motion.div
@@ -34,12 +34,12 @@ export default function BottomNav() {
                 />
               )}
               <Icon
-                size={22}
+                size={20}
                 strokeWidth={active ? 2.5 : 1.5}
                 className={active ? 'text-warm-500' : 'text-muted-foreground'}
               />
               <span
-                className={`text-[10px] ${active ? 'font-semibold text-warm-500' : 'text-muted-foreground'}`}
+                className={`text-xs ${active ? 'font-semibold text-warm-500' : 'text-muted-foreground'}`}
               >
                 {label}
               </span>
