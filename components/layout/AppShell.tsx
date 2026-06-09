@@ -27,7 +27,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         <path d="M70 50C80 70 80 100 65 130" stroke="#6B7B3C" strokeWidth="1.2" opacity="0.06" fill="none" />
       </svg>
 
-      <div className="max-w-lg mx-auto min-h-screen pb-20 pt-6 px-5 relative z-[1]">
+      <div className="max-w-lg mx-auto min-h-screen pb-20 pt-6 px-5">
         <PageTransition>
           {children}
         </PageTransition>
