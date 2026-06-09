@@ -295,7 +295,7 @@ export default function AIChatDialog({ apiKey, onDiaryGenerated, onClose }: AICh
           )}
 
           {/* Text input */}
-          <div className="p-4 border-t border-warm-200/50 pb-safe">
+          <div className="p-4 border-t border-warm-200/50" style={{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom, 0px))' }}>
             <div className="flex gap-2">
               {/* Voice toggle button */}
               {speechSupported && (
