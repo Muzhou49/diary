@@ -2,9 +2,10 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Send, Bot, User, Loader2, ChevronLeft, ChevronRight, Sparkles } from 'lucide-react';
+import { Send, Bot, User, Loader2, ChevronLeft, ChevronRight, Sparkles, Mic, MicOff } from 'lucide-react';
 import { saveChatMessage, getChatMessagesByDate, getChatDates } from '@/lib/db';
 import { chatWithDeepSeek, CHAT_SYSTEM_PROMPT } from '@/lib/deepseek';
+import { SpeechRecognizer, checkSpeechSupport } from '@/lib/speech';
 import type { ChatMessage } from '@/lib/types';
 
 const WELCOME_MSG: ChatMessage = {
@@ -33,6 +34,41 @@ export default function AIChatDialog({ apiKey, onDiaryGenerated, onClose }: AICh
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const isToday = chatDate === today;
+  const speechSupported = checkSpeechSupport();
+
+  // Voice recording state
+  const [voiceRecording, setVoiceRecording] = useState(false);
+  const [voiceText, setVoiceText] = useState('');
+  const recognizerRef = useRef<SpeechRecognizer | null>(null);
+
+  const startVoice = () => {
+    const recognizer = new SpeechRecognizer('zh-CN');
+    recognizerRef.current = recognizer;
+    recognizer.start(
+      (text, isFinal) => {
+        setVoiceText(text);
+        if (isFinal) {
+          setVoiceText('');
+          setVoiceRecording(false);
+          sendMessage(text);
+        }
+      },
+      () => {
+        setVoiceRecording(false);
+        setVoiceText('');
+      }
+    );
+    setVoiceRecording(true);
+  };
+
+  const stopVoice = () => {
+    recognizerRef.current?.stop();
+    setVoiceRecording(false);
+    if (voiceText.trim()) {
+      sendMessage(voiceText.trim());
+    }
+    setVoiceText('');
+  };
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
@@ -240,15 +276,48 @@ export default function AIChatDialog({ apiKey, onDiaryGenerated, onClose }: AICh
             </button>
           </div>
 
+          {/* Voice recording indicator */}
+          {voiceRecording && (
+            <div className="px-4 pb-1">
+              <div className="flex items-center gap-3 px-4 py-2.5 rounded-full bg-red-50 border border-red-200 animate-pulse">
+                <div className="w-3 h-3 rounded-full bg-red-400" />
+                <span className="text-sm text-red-500 flex-1">
+                  {voiceText || '正在聆听…'}
+                </span>
+                <button
+                  onClick={stopVoice}
+                  className="text-red-400 hover:text-red-500"
+                >
+                  <MicOff size={16} />
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* Text input */}
-          <div className="p-4 border-t border-warm-200/50">
+          <div className="p-4 border-t border-warm-200/50 pb-safe">
             <div className="flex gap-2">
+              {/* Voice toggle button */}
+              {speechSupported && (
+                <button
+                  onClick={voiceRecording ? stopVoice : startVoice}
+                  disabled={loading}
+                  className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors ${
+                    voiceRecording
+                      ? 'bg-red-400 text-white'
+                      : 'bg-white/80 text-muted-foreground hover:bg-warm-100'
+                  }`}
+                >
+                  <Mic size={18} />
+                </button>
+              )}
               <input
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
-                placeholder="打字聊聊今天的心情…"
-                className="flex-1 px-4 py-3 rounded-full bg-white/80 outline-none text-sm"
+                placeholder={voiceRecording ? '语音识别中…' : '打字聊聊今天的心情…'}
+                disabled={voiceRecording}
+                className="flex-1 px-4 py-3 rounded-full bg-white/80 outline-none text-sm disabled:opacity-50"
               />
               <button
                 onClick={() => sendMessage()}
